@@ -48,7 +48,9 @@
     </Dialog>
 
     <Table>
-      <TableCaption class="text-2xl text-black" v-if="items.length <= 0 ">Üres a kosarad.</TableCaption>
+      <TableCaption class="text-2xl text-black" v-if="items.length <= 0"
+        >Üres a kosarad.</TableCaption
+      >
       <TableHeader>
         <TableRow>
           <TableHead class="w-25"> Termék neve </TableHead>
@@ -97,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { onMounted } from "vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,11 +136,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import axios from "axios";
-const isOpen = ref(false)
-const shops= ref([])
-const items = ref([
- 
-]);
+const isOpen = ref(false);
+const shops = ref([]);
+const items = ref([]);
 function deleteItem(id) {
   items.value = items.value.filter((item) => item.id !== id);
 }
@@ -153,42 +153,36 @@ const formSchema = toTypedSchema(
     price: z.coerce.number().min(20, "Az ár nem lehet 0"),
   }),
 );
-
 function changeStatus(id) {
   const searchedItem = items.value.find((item) => item.id === id);
   searchedItem.isBought = !searchedItem.isBought;
-  console.log(searchedItem.isBought);
 }
 const form = useForm({
   validationSchema: formSchema,
 });
 const submitForm = form.handleSubmit((values) => {
-  items.value.push({
+  const cartItems = {
     id: crypto.randomUUID(),
     name: values.name,
     description: values.description,
     price: values.price,
-  });
-  const cartItems= {
-    id: crypto.randomUUID(),
-    name: values.name,
-    description: values.description,
-    price: values.price,
-  }
-const parsedItems = JSON.parse(localStorage.getItem("items"))
-
-localStorage.setItem("items", JSON.stringify(cartItems))
+  };
+  const parsedItems = JSON.parse(localStorage.getItem("items") || "[]");
+  parsedItems.push(cartItems);
+  items.value.push(cartItems);
+  localStorage.setItem("items", JSON.stringify(parsedItems));
   form.resetForm();
-  isOpen.value = false
+  isOpen.value = false;
 });
-onMounted (() =>{
-name()
-})
+onMounted(() => {
+  const cartItems = JSON.parse(localStorage.getItem("items") || "[]");
+  items.value = cartItems;
+  name();
+});
+
 async function name() {
-  const response = await axios.get("https://robber.hu/proba-api/shops.php")
-  console.log(response)
-  const items= response.data
-console.log(items)
+  const response = await axios.get("https://robber.hu/proba-api/shops.php");
+  const items = response.data;
   console.log(items)
 }
 </script>
