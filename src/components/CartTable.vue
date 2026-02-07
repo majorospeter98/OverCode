@@ -1,43 +1,44 @@
 <template>
     <div>
-           <Table  class="w-[50%] min-w-100 border border-gray-300 container">
+           <Table  class="w-[50%] min-w-100  container">
      
-      <TableHeader class="bg-gray-200">
-        <TableRow>
-          <TableHead class="w-25"> Termék neve </TableHead>
-          <TableHead>Leírás</TableHead>
-          <TableHead>kb. ár (HUF)</TableHead>
-          <TableHead>Bolt neve</TableHead>
-          <TableHead class=""> Műveletek </TableHead>
+      <TableHeader class="bg-gray-200 divide-x divide-red-600 font-bold">
+        <TableRow class="font-bold">
+          <TableHead class="border border-gray-400">Termék neve </TableHead>
+          <TableHead class="border border-gray-400">Leírás</TableHead>
+          <TableHead class="border border-gray-400">kb. ár (HUF)</TableHead>
+          <TableHead class="border border-gray-400">Bolt neve</TableHead>
+          <TableHead class="border border-gray-400"> Műveletek </TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody class="border-t border-gray-700" >
+      <TableBody >
         <TableRow
          
           v-for="item in props.items"
           :key="item.id"
-          :class="item.isBought ? 'bg-gray-300 line-through' : ''"
+          class="border border-gray-400"
+          :class="item.isBought ? 'bg-gray-500 line-through' : 'bg-white'"
         >
-          <TableCell class="font-medium">
+          <TableCell class="font-medium border border-gray-400">
             {{ item.name }}
           </TableCell>
-          <TableCell>{{ item.description }}</TableCell>
-          <TableCell>{{ item.price }}</TableCell>
-          <TableCell>{{ item.shop }}</TableCell>
-          <TableCell>
+          <TableCell class="border border-gray-400" >{{ item.description }}</TableCell>
+          <TableCell class="border border-gray-400">{{ item.price }}</TableCell>
+          <TableCell class="border border-gray-400">{{ item.shop }}</TableCell>
+          <TableCell class="border border-gray-400">
             <Button
               variant="outline"
               size="lg"
-              class="rounded-full"
+              class="border-none outline-0"
               @click="changeStatus(item.id)"
             >
               {{ item.isBought ? " Mégse" : "Beszerezve" }}
             </Button>
-            |
+            
             <Button
               variant="outline"
               size="lg"
-              class="rounded-full"
+              class="border-none outline-0 ml-3.5"
               @click="deleteItem(item.id)"
             >
               Törlés

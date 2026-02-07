@@ -2,7 +2,7 @@
   <div>
     <div class="container flex items-center justify-between">
       <p>{{ props.items.length }} termék összesen</p>
-      <Button variant="outline" @click="isOpen = true"> ÚJ TERMÉK </Button>
+      <Button variant="outline" class="bg-gray-200 border border-black" @click="isOpen = true"> ÚJ TERMÉK </Button>
     </div>
     <!-- eslint-disable-next-line vue/no-v-model-argument -->
     <Dialog v-model:open="isOpen">
@@ -151,7 +151,7 @@ const formSchema = toTypedSchema(
       .regex(/^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/, "Csak betűket adhatsz meg")
       .optional()
       .or(z.literal("")),
-    price: z.coerce.number().min(20, "Az ár nem lehet 10-nél kisebb"),
+    price: z.coerce.number().int().min(20, "Az ár nem lehet 20-nál kisebb és csak egész szám lehet"),
     shop: z.string().min(1, "Válassz boltot"),
   }),
 );

@@ -17,6 +17,13 @@ import Cart from "./components/Cart.vue"
 </script>
 
 <style>
+*{
+   box-sizing: border-box;
+ font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.65;
+}
 .container{
 max-width: 1000px;
 width: 80%;
