@@ -31,7 +31,7 @@
               class="rounded-full"
               @click="changeStatus(item.id)"
             >
-              {{ item.isBought ? " Mégse / Nincs beszerezve" : "Beszerezve" }}
+              {{ item.isBought ? " Mégse" : "Beszerezve" }}
             </Button>
             |
             <Button

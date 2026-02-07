@@ -38,7 +38,7 @@
               <FormControl>
                 <Input type="number" placeholder="18" v-bind="componentField" />
               </FormControl>
-              <FormDescription> Csak szám 10-nél nagyobb szám lehet. </FormDescription>
+              <FormDescription></FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
@@ -75,11 +75,10 @@
                   </Command>
                 </PopoverContent>
               </Popover>
-
               <FormMessage />
             </FormItem>
           </FormField>
-
+          <p class="mt-5" v-if="errors.length>1"> Hibás API / rossz formátum miatt nem jelenik meg</p>
           <DialogFooter class="mt-4">
             <DialogClose as-child>
               <Button variant="outline"> Mégse</Button>
@@ -91,13 +90,12 @@
     </Dialog>
   </div>
 </template>
-
 <script setup>
 import { ref } from "vue";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
+import { z } from "zod";
 import { useForm } from "vee-validate";
 const emit = defineEmits(["submitForm"]);
 const props = defineProps(["items"]);
@@ -137,7 +135,9 @@ import axios from "axios";
 const isOpen = ref(false);
 const shops = ref([]);
 const open = ref(false);
+const errors = ref([]);
 import { onMounted } from "vue";
+
 const formSchema = toTypedSchema(
   z.object({
     name: z
@@ -145,7 +145,12 @@ const formSchema = toTypedSchema(
       .min(2)
       .max(50)
       .regex(/^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/, "Csak betűket adhatsz meg"),
-    description: z.string().max(50).optional(),
+    description: z
+      .string()
+      .max(50)
+      .regex(/^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/, "Csak betűket adhatsz meg")
+      .optional()
+      .or(z.literal("")),
     price: z.coerce.number().min(20, "Az ár nem lehet 10-nél kisebb"),
     shop: z.string().min(1, "Válassz boltot"),
   }),
@@ -170,9 +175,21 @@ onMounted(() => {
   name();
 });
 async function name() {
-  const response = await axios.get("https://robber.hu/proba-api/shops.php");
-  const items = await response.data;
-  shops.value = items.data;
+    try{
+    const response = await axios.get("https://robber.hu/proba-api/shops.php");
+  console.log(response)
+if (response.status === 200) {
+    const responseData = response.data;
+    console.log(responseData.data)
+    if (responseData &&  Array.isArray(responseData.data)) {
+      shops.value = responseData.data;
+      errors.value.push("Nem létezik vagy rossz formátum")
+    } 
+  }
+}
+catch(error){
+  errors.value.push(error)
+}
 }
 </script>
 <style></style>

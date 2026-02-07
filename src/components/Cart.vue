@@ -14,7 +14,6 @@ import CartForm from "./CartForm.vue";
 import { ref } from "vue";
 import { onMounted } from "vue";
 const items = ref([]);
-
 onMounted(() => {
   const cartItems = JSON.parse(localStorage.getItem("items") || "[]");
   items.value = cartItems;
@@ -26,13 +25,12 @@ function deleteItem(id) {
 function changeStatus(id) {
   const searchedItem = items.value.find((item) => item.id === id);
   searchedItem.isBought = !searchedItem.isBought;
+    localStorage.setItem("items", JSON.stringify(items.value));
 }
 function submitForm(item) {
   const parsedItems = JSON.parse(localStorage.getItem("items") || "[]");
-  console.log(parsedItems);
-  parsedItems.push(item);
+    parsedItems.push(item);
   items.value.push(item);
-
   localStorage.setItem("items", JSON.stringify(parsedItems));
 }
 </script>
