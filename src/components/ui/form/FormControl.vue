@@ -6,6 +6,7 @@ const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 </script>
 
 <template>
+  <div>
   <Slot
     :id="formItemId"
     data-slot="form-control"
@@ -16,4 +17,5 @@ const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
   >
     <slot />
   </Slot>
+</div>
 </template>

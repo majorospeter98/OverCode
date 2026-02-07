@@ -1,10 +1,16 @@
 <template>
-    <div>
-  <p>{{ props.items.length }} termék összesen</p>
+  <div>
+    <div class="container flex items-center justify-between">
+      <p>{{ props.items.length }} termék összesen</p>
+      <Button variant="outline" @click="isOpen = true"> ÚJ TERMÉK </Button>
+    </div>
     <!-- eslint-disable-next-line vue/no-v-model-argument -->
     <Dialog v-model:open="isOpen">
-      <Button variant="outline" @click="isOpen = true"> ÚJ TERMÉK </Button>
-      <DialogContent aria-describedby="undefined" class="sm:max-w-106.25">
+      <DialogContent
+        aria-describedby="undefined"
+        class="sm:max-w-106.25"
+        @openAutoFocus.prevent
+      >
         <DialogTitle class="text-center">Új termék hozzáadása</DialogTitle>
         <DialogDescription> </DialogDescription>
         <form @submit.prevent="submitForm" class="mt-8">
@@ -12,7 +18,7 @@
             <FormItem>
               <FormLabel>Termék neve</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" v-bind="componentField" />
+                <Input placeholder="Termék neve" v-bind="componentField" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -21,80 +27,80 @@
             <FormItem class="mt-4">
               <FormLabel>Leírás</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" v-bind="componentField" />
+                <Input placeholder="Leírás" v-bind="componentField" />
               </FormControl>
               <FormMessage />
             </FormItem>
           </FormField>
           <FormField v-slot="{ componentField }" name="price">
             <FormItem class="mt-4 mb-4">
-              <FormLabel>Életkor</FormLabel>
+              <FormLabel>kb. ár (HUF)</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="18" v-bind="componentField" />
               </FormControl>
-              <FormDescription> Csak számot adhatsz meg. </FormDescription>
+              <FormDescription> Csak szám 10-nél nagyobb szám lehet. </FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
-          <!-- eslint-disable-next-line vue/no-v-model-argument -->
-          <Popover v-model:open="open">
-            <PopoverTrigger as-child>
-              <Button
-                variant="outline"
-                role="combobox"
-                :aria-expanded="open"
-                class="w-50 justify-between"
-              >
-                {{ selectedShop?.name || "Válaszd ki a boltot..." }}
-                <ChevronsUpDownIcon class="opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-50 p-0">
-              <Command>
-                <CommandInput class="h-9" placeholder="Search framework..." />
-                <CommandList>
-                  <CommandEmpty>No framework found.</CommandEmpty>
-                  <CommandGroup>
-                    <CommandItem
-                      v-for="shop in shops"
-                      :key="shop.name"
-                      :value="shop.name"
-                      @select="
-                        (ev) => {
-                          selectShop(ev.detail.value);
-                        }
-                      "
-                    >
-                      {{ shop.name }}
-                      <CheckIcon />
-                    </CommandItem>
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <FormField name="shop" v-slot="{ value, handleChange }">
+            <FormItem class="mt-4 mb-4">
+              <FormLabel>Bolt Neve</FormLabel>
+              <!-- eslint-disable-next-line vue/no-v-model-argument -->
+              <Popover v-model:open="open">
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    class="w-50 justify-between"
+                  >
+                    {{ value || "Válaszd ki a boltot..." }}
+                    <ChevronsUpDownIcon class="opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-50 p-0">
+                  <Command>
+                    <CommandList>
+                      <CommandGroup>
+                        <CommandItem
+                          v-for="shop in shops"
+                          :key="shop.name"
+                          :value="shop.name"
+                          @select="() => handleChange(shop.name)"
+                        >
+                          {{ shop.name }}
+                          <CheckIcon />
+                        </CommandItem>
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
           <DialogFooter class="mt-4">
             <DialogClose as-child>
-              <Button variant="outline"> Cancel </Button>
+              <Button variant="outline"> Mégse</Button>
             </DialogClose>
-            <Button type="submit"> Save changes </Button>
+            <Button type="submit"> Mentés </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-</div>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { useForm } from "vee-validate";
-const value = ref("");
-const emit= defineEmits(["submitForm"])
-const props= defineProps(["items"])
+const emit = defineEmits(["submitForm"]);
+const props = defineProps(["items"]);
 import {
   Dialog,
   DialogContent,
@@ -102,7 +108,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 import {
@@ -140,8 +145,9 @@ const formSchema = toTypedSchema(
       .min(2)
       .max(50)
       .regex(/^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/, "Csak betűket adhatsz meg"),
-    description: z.string().min(2).max(50),
+    description: z.string().max(50).optional(),
     price: z.coerce.number().min(20, "Az ár nem lehet 10-nél kisebb"),
+    shop: z.string().min(1, "Válassz boltot"),
   }),
 );
 const form = useForm({
@@ -152,33 +158,21 @@ const submitForm = form.handleSubmit((values) => {
     id: crypto.randomUUID(),
     name: values.name,
     description: values.description,
-       price: values.price,
-    shop:selectedShop.value.name,
-    isBought:false
-   };
-   emit("submitForm", cartItems)
-    form.resetForm();
+    price: values.price,
+    shop: values.shop,
+    isBought: false,
+  };
+  emit("submitForm", cartItems);
+  form.resetForm();
   isOpen.value = false;
 });
 onMounted(() => {
-   name();
-  selectedShop.value;
+  name();
 });
-const selectedShop = computed(() =>
-  shops.value.find((shop) => shop.name === value.value),
-);
-function selectShop(selectedValue) {
-  console.log(selectedValue);
-  value.value = selectedValue === value.value ? "" : selectedValue;
-  console.log(value.value);
-  open.value = false;
-}
 async function name() {
   const response = await axios.get("https://robber.hu/proba-api/shops.php");
   const items = await response.data;
-   shops.value = items.data;
- }
+  shops.value = items.data;
+}
 </script>
-
-<style>
-</style>
+<style></style>

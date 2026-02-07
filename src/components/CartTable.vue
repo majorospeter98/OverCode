@@ -1,10 +1,8 @@
 <template>
     <div>
-           <Table>
-      <TableCaption class="text-2xl text-black" v-if="props.items.length <= 0"
-        >Üres a kosarad.</TableCaption
-      >
-      <TableHeader>
+           <Table  class="w-[50%] min-w-100 border border-gray-300 container">
+     
+      <TableHeader class="bg-gray-200">
         <TableRow>
           <TableHead class="w-25"> Termék neve </TableHead>
           <TableHead>Leírás</TableHead>
@@ -13,14 +11,12 @@
           <TableHead class=""> Műveletek </TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody class="border-t border-gray-700" >
         <TableRow
+         
           v-for="item in props.items"
           :key="item.id"
-          :class="{
-            'line-through': item.isBought,
-            'no-underline': !item.isBought,
-          }"
+          :class="item.isBought ? 'bg-gray-300 line-through' : ''"
         >
           <TableCell class="font-medium">
             {{ item.name }}
@@ -35,7 +31,7 @@
               class="rounded-full"
               @click="changeStatus(item.id)"
             >
-              {{ item.isBought ? "Beszerezve" : "Mégse/ Nincs beszerezve" }}
+              {{ item.isBought ? " Mégse / Nincs beszerezve" : "Beszerezve" }}
             </Button>
             |
             <Button
@@ -49,6 +45,9 @@
           </TableCell>
         </TableRow>
       </TableBody>
+       <TableCaption class="text-2xl text-black" v-if="props.items.length <= 0"
+        >Üres a kosarad.</TableCaption
+      >
     </Table>
 </div>
 </template>

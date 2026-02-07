@@ -1,7 +1,7 @@
 <template>
-  <div class="ml-8">
+  <div class="mt-3">
     <cart-form :items="items" @submit-form="submitForm"></cart-form>
-    <cart-table
+    <cart-table class="mt-8"
       :items="items"
       @change-status="changeStatus"
       @delete-item="deleteItem"
