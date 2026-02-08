@@ -2,7 +2,13 @@
   <div>
     <div class="container flex items-center justify-between">
       <p>{{ props.items.length }} termék összesen</p>
-      <Button variant="outline" class="bg-gray-200 border border-black" @click="isOpen = true"> ÚJ TERMÉK </Button>
+      <Button
+        variant="outline"
+        class="bg-gray-200 border border-black"
+        @click="isOpen = true"
+      >
+        ÚJ TERMÉK
+      </Button>
     </div>
     <!-- eslint-disable-next-line vue/no-v-model-argument -->
     <Dialog v-model:open="isOpen">
@@ -56,29 +62,33 @@
                     {{ value || "Válaszd ki a boltot..." }}
                     <ChevronsUpDownIcon class="opacity-50" />
                   </Button>
-                </PopoverTrigger>
+                   </PopoverTrigger>
                 <PopoverContent class="w-50 p-0">
-                  <Command>
+                  <Command >
                     <CommandList>
                       <CommandGroup>
                         <CommandItem
                           v-for="shop in shops"
                           :key="shop.name"
                           :value="shop.name"
-                          @select="() => handleChange(shop.name)"
+                         @select="() => { handleChange(shop.name); open = false }"
+                          
                         >
                           {{ shop.name }}
-                          <CheckIcon />
+                      
                         </CommandItem>
                       </CommandGroup>
                     </CommandList>
                   </Command>
+               
                 </PopoverContent>
               </Popover>
               <FormMessage />
             </FormItem>
           </FormField>
-          <p class="mt-5" v-if="errors.length>1"> Hibás API / rossz formátum miatt nem jelenik meg</p>
+          <p class="mt-5" v-if="errors.length > 1">
+            Hibás API / rossz formátum miatt nem jelenik meg
+          </p>
           <DialogFooter class="mt-4">
             <DialogClose as-child>
               <Button variant="outline"> Mégse</Button>
@@ -91,14 +101,6 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { toTypedSchema } from "@vee-validate/zod";
-import { z } from "zod";
-import { useForm } from "vee-validate";
-const emit = defineEmits(["submitForm"]);
-const props = defineProps(["items"]);
 import {
   Dialog,
   DialogContent,
@@ -131,13 +133,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ref, onMounted } from "vue";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toTypedSchema } from "@vee-validate/zod";
+import { z } from "zod";
+import { useForm } from "vee-validate";
 import axios from "axios";
+const emit = defineEmits(["submitForm"]);
+const props = defineProps(["items"]);
 const isOpen = ref(false);
 const shops = ref([]);
 const open = ref(false);
 const errors = ref([]);
-import { onMounted } from "vue";
-
 const formSchema = toTypedSchema(
   z.object({
     name: z
@@ -151,7 +159,10 @@ const formSchema = toTypedSchema(
       .regex(/^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/, "Csak betűket adhatsz meg")
       .optional()
       .or(z.literal("")),
-    price: z.coerce.number().int().min(20, "Az ár nem lehet 20-nál kisebb és csak egész szám lehet"),
+    price: z.coerce
+      .number()
+      .int()
+      .min(20, "Az ár nem lehet 20-nál kisebb és csak egész szám lehet"),
     shop: z.string().min(1, "Válassz boltot"),
   }),
 );
@@ -175,21 +186,18 @@ onMounted(() => {
   name();
 });
 async function name() {
-    try{
+  try {
     const response = await axios.get("https://robber.hu/proba-api/shops.php");
-  console.log(response)
-if (response.status === 200) {
-    const responseData = response.data;
-    console.log(responseData.data)
-    if (responseData &&  Array.isArray(responseData.data)) {
-      shops.value = responseData.data;
-      errors.value.push("Nem létezik vagy rossz formátum")
-    } 
+    if (response.status === 200) {
+      const responseData = response.data;
+            if (responseData && Array.isArray(responseData.data)) {
+        shops.value = responseData.data;
+        errors.value.push("Nem létezik vagy rossz formátum");
+      }
+    }
+  } catch (error) {
+    errors.value.push(error);
   }
-}
-catch(error){
-  errors.value.push(error)
-}
 }
 </script>
 <style></style>

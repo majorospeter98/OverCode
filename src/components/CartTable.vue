@@ -12,7 +12,7 @@
       </TableHeader>
       <TableBody>
         <TableRow
-          v-for="item in currentItems"
+          v-for="item in filteredItems"
           :key="item.id"
           class="border border-gray-400"
           :class="item.isBought ? 'bg-gray-500 line-through' : 'bg-white'"
@@ -45,26 +45,11 @@
           </TableCell>
         </TableRow>
       </TableBody>
-      <TableCaption class="text-2xl text-black" v-if="props.items.length <= 0"
+      <TableCaption class="text-2xl text-black" v-if="filteredItems.length <= 0"
         >Üres a kosarad.</TableCaption
       >
     </Table>
-      <Pagination class="mt-5"  :items-per-page="5" :total="total" :default-page="1">
-      <PaginationContent>
-  <PaginationPrevious @click="page > 1 && page--" />
-  <PaginationItem
-    v-for="p in pages"
-    :key="p"
-    :value="p"
-    :is-active="p === page"
-    @click="page = p"
-  >
-    {{ p }}
-  </PaginationItem>
-  <PaginationNext 
- @click="page < total && page++" />
-</PaginationContent>
-    </Pagination>
+      <pagination :items="props.items" @items="filterItems"></pagination>
   </div>
 </template>
 <script setup>
@@ -78,37 +63,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { ref } from "vue";
 import { Button } from "@/components/ui/button";
-import { computed,ref } from "vue";
+import Pagination from "./CartPagination.vue";
 const emit = defineEmits(["changeStatus", "deleteItem"]);
-const itemsPerPage = 5;
-const page = ref(1)
 const props = defineProps(["items"]);
-const currentItems = computed(() => {
-  const start = (page.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return props.items.slice(start, end);
-});
+const filteredItems = ref([])
 function changeStatus(id) {
   emit("changeStatus", id);
 }
 function deleteItem(id) {
   emit("deleteItem", id);
 }
-const total = computed(() => Math.ceil(props.items.length / Number(import.meta.env.VITE_PAGE_SIZE)));
-const pages = computed(() => {
-  const list = [];
-  for (let i = 1; i <= total.value; i++) {
-    list.push(i);
-     }
-  return list;
-});
+function filterItems(items){
+filteredItems.value= items
+}
 </script>
