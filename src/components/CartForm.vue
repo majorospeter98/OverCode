@@ -162,6 +162,7 @@ const formSchema = toTypedSchema(
     price: z.coerce
       .number()
       .int()
+      .max(100000000)
       .min(20, "Az ár nem lehet 20-nál kisebb és csak egész szám lehet"),
     shop: z.string().min(1, "Válassz boltot"),
   }),

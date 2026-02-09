@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Pagination
+    <Pagination v-if="props.items.length>0"
       class="mt-5"
       :items-per-page="itemsPerPage"
       :total="props.items.length"
@@ -20,6 +20,7 @@
         <PaginationNext @click="page < total && page++" />
       </PaginationContent >
     </Pagination>
+    
   </div>
 </template>
 
