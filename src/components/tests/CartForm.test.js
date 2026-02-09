@@ -3,11 +3,10 @@ import { describe, it, expect, vi } from "vitest";
 import CartForm from "../CartForm.vue";
 import axios from "axios";
 
-vi.mock("axios");     // copilot segítség kellett a vi.mock és axios mockhoz, enélkül 2 errort kaptam "Serialized Error: { code: 'UND_ERR_INVALID_ARG' }"
-
+vi.mock("axios"); // copilot segítség kellett a vi.mock és axios mockhoz, enélkül 2 errort kaptam "Serialized Error: { code: 'UND_ERR_INVALID_ARG' }"
 axios.get.mockResolvedValue({
   status: 200,
-  data: { data: [] }
+  data: { data: [] },
 });
 
 describe("Check cart item", () => {
@@ -21,7 +20,7 @@ describe("Check cart item", () => {
   });
 });
 
-describe("Button length emptiness check", () => {
+describe("Cart emptiness check", () => {
   it("check if the cart is empty", () => {
     const wrapper = mount(CartForm, {
       props: {

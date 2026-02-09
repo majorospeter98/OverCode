@@ -1,6 +1,7 @@
 <template>
   <div>
-    <Pagination v-if="props.items.length>0"
+    <Pagination
+      v-if="props.items.length > 0"
       class="mt-5"
       :items-per-page="itemsPerPage"
       :total="props.items.length"
@@ -18,12 +19,10 @@
           {{ p }}
         </PaginationItem>
         <PaginationNext @click="page < total && page++" />
-      </PaginationContent >
+      </PaginationContent>
     </Pagination>
-    
   </div>
 </template>
-
 <script setup>
 import {
   Pagination,
@@ -35,12 +34,11 @@ import {
 } from "@/components/ui/pagination";
 import { computed, ref, watch } from "vue";
 const props = defineProps(["items"]);
-const emit= defineEmits(["items"]);
-const itemsPerPage = Number(import.meta.env.VITE_PAGE_SIZE);  // Copilot kellett segítség a paginationhoz.
+const emit = defineEmits(["items"]);
+const itemsPerPage = Number(import.meta.env.VITE_PAGE_SIZE); // Copilot kellett segítség a paginationhoz.
 const page = ref(1);
 const currentItems = computed(() => {
   const start = (page.value - 1) * itemsPerPage;
-  console.log(start)
   const end = start + itemsPerPage;
   return props.items.slice(start, end);
 });
@@ -48,7 +46,7 @@ watch(currentItems, (val) => {
   emit("items", val);
 });
 const total = computed(() => Math.ceil(props.items.length / itemsPerPage)); // Copilot kellett segítség a paginationhoz.
-const pages = computed(() => { 
+const pages = computed(() => {
   const list = [];
   for (let i = 1; i <= total.value; i++) {
     list.push(i);

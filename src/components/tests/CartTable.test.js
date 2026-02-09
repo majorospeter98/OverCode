@@ -2,10 +2,6 @@ import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi} from "vitest";
 import CartTable from "../CartTable.vue";
 
-import axios from "axios";
-vi.mock("axios");
-axios.get.mockResolvedValue({ status: 200, data: { data: [] } });
-
 describe("EmptyCheck", () => {
   it("check if the table is empty or not", () => {
     const wrapper = mount(CartTable, {

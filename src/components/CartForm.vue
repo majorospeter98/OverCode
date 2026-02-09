@@ -42,7 +42,7 @@
             <FormItem class="mt-4 mb-4">
               <FormLabel>kb. ár (HUF)</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="18" v-bind="componentField" />
+                <Input type="number" placeholder="A termék ára" v-bind="componentField" />
               </FormControl>
               <FormDescription></FormDescription>
               <FormMessage />
@@ -62,25 +62,27 @@
                     {{ value || "Válaszd ki a boltot..." }}
                     <ChevronsUpDownIcon class="opacity-50" />
                   </Button>
-                   </PopoverTrigger>
+                </PopoverTrigger>
                 <PopoverContent class="w-50 p-0">
-                  <Command >
+                  <Command>
                     <CommandList>
                       <CommandGroup>
                         <CommandItem
                           v-for="shop in shops"
                           :key="shop.name"
                           :value="shop.name"
-                         @select="() => { handleChange(shop.name); open = false }"
-                          
+                          @select="
+                            () => {
+                              handleChange(shop.name);
+                              open = false;
+                            }
+                          "
                         >
                           {{ shop.name }}
-                      
                         </CommandItem>
                       </CommandGroup>
                     </CommandList>
                   </Command>
-               
                 </PopoverContent>
               </Popover>
               <FormMessage />
@@ -191,7 +193,7 @@ async function name() {
     const response = await axios.get("https://robber.hu/proba-api/shops.php");
     if (response.status === 200) {
       const responseData = response.data;
-            if (responseData && Array.isArray(responseData.data)) {
+      if (responseData && Array.isArray(responseData.data)) {
         shops.value = responseData.data;
         errors.value.push("Nem létezik vagy rossz formátum");
       }

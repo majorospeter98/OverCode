@@ -1,7 +1,8 @@
 <template>
   <div class="mt-3">
     <cart-form :items="items" @submit-form="submitForm"></cart-form>
-    <cart-table class="mt-6"
+    <cart-table
+      class="mt-6"
       :items="items"
       @change-status="changeStatus"
       @delete-item="deleteItem"
@@ -25,11 +26,11 @@ function deleteItem(id) {
 function changeStatus(id) {
   const searchedItem = items.value.find((item) => item.id === id);
   searchedItem.isBought = !searchedItem.isBought;
-    localStorage.setItem("items", JSON.stringify(items.value));
+  localStorage.setItem("items", JSON.stringify(items.value));
 }
 function submitForm(item) {
   const parsedItems = JSON.parse(localStorage.getItem("items") || "[]");
-    parsedItems.push(item);
+  parsedItems.push(item);
   items.value.push(item);
   localStorage.setItem("items", JSON.stringify(parsedItems));
 }

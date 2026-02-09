@@ -15,7 +15,7 @@
           v-for="item in filteredItems"
           :key="item.id"
           class="border border-gray-400"
-          :class="item.isBought ? 'bg-gray-500 line-through' : 'bg-white'"
+          :class="item.isBought ? 'bg-[#BCBFC4] line-through' : 'bg-white'"
         >
           <TableCell class="font-medium border border-gray-400">
             {{ item.name }}
@@ -46,10 +46,12 @@
         </TableRow>
       </TableBody>
       <TableCaption class="text-2xl text-black" v-if="filteredItems.length <= 0"
-        >Üres a kosarad.</TableCaption
+        >Üres a listád.</TableCaption
       >
     </Table>
+    <div class="flex justify-end container">
       <pagination :items="props.items" @items="filterItems"></pagination>
+    </div>
   </div>
 </template>
 <script setup>
@@ -68,14 +70,14 @@ import { Button } from "@/components/ui/button";
 import Pagination from "./CartPagination.vue";
 const emit = defineEmits(["changeStatus", "deleteItem"]);
 const props = defineProps(["items"]);
-const filteredItems = ref([])
+const filteredItems = ref([]);
 function changeStatus(id) {
   emit("changeStatus", id);
 }
 function deleteItem(id) {
   emit("deleteItem", id);
 }
-function filterItems(items){
-filteredItems.value= items
+function filterItems(items) {
+  filteredItems.value = items;
 }
 </script>
